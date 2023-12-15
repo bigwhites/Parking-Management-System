@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/parking/parking.iml" filepath="$PROJECT_DIR$/parking/parking.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/智能停车管理系统.iml" filepath="$PROJECT_DIR$/.idea/智能停车管理系统.iml" />
     </modules>
   </component>
