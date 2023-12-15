@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wtu.parking.mapper.GoodsTradeMapper">
+
+    <resultMap id="trMap" type="com.wtu.parking.entity.GoodsTrade">
+        <id column="trId" property="trId"/>
+        <result column="uId" property="uId"/>
+        <result column="gId" property="gId"/>
+        <result column="address" property="address"/>
+        <result column="status" property="status"/>
+        <result column="logisticsNum" property="logisticsNum"/>
+        <result column="price" property="price"/>
+    </resultMap>
+
+    <insert id="insertTrRec" parameterType="com.wtu.parking.entity.GoodsTrade">
+        insert into GoodsTrade(uId, gId, address, logisticsNum, price)
+        VALUES(#{uId},#{gId},#{address},#{logisticsNum},#{price});
+    </insert>
+
+    <update id="update" parameterType="com.wtu.parking.entity.GoodsTrade">
+        update GoodsTrade
+        set logisticsNum = #{logisticsNum} , status=#{status}
+        where trId = #{trId}
+    </update>
+
+    <select id="getByTrId" parameterType="int" resultMap="trMap">
+        select * from GoodsTrade
+        where trId = #{trId}
+    </select>
+
+    <select id="getByUId" parameterType="int" resultMap="trMap">
+        select * from GoodsTrade
+        where uId = #{uId}
+    </select>
+
+    <select id="getByTrRecordPage" parameterType="int" resultMap="trMap">
+        select * from GoodsTrade
+        limit #{limit} offset #{offset}
+    </select>
+
+    <select id="getByTrRecordCnt" parameterType="int" resultType="int">
+        SELECT COUNT(*)
+        FROM  GoodsTrade
+    </select>
+
+</mapper>

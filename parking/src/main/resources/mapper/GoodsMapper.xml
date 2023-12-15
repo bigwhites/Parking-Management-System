@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wtu.parking.mapper.GoodsMapper">
+
+    <resultMap id="GMap" type="com.wtu.parking.entity.Goods">
+        <id column="gId" property="gId"/>
+        <result column="gName" property="gName"/>
+        <result column="gInfo" property="gInfo"/>
+        <result column="needCredit" property="needCredit"/>
+        <result column="count" property="count"/>
+    </resultMap>
+
+    <select id="findBygId" parameterType="int" resultMap="GMap">
+        select *
+        from Goods where gId = #{gId}
+        and deleteFlag = false
+    </select>
+
+    <insert id="insert" parameterType="com.wtu.parking.entity.Goods">
+        insert into Goods(gName,gInfo,needCredit,count)
+        values(#{gName},#{gInfo},#{needCredit},#{count})
+    </insert>
+
+    <update id="update" parameterType="com.wtu.parking.entity.Goods">
+        update Goods set gName=#{gName} , gInfo=#{gInfo}, needCredit=#{needCredit},count=#{count}
+        where gId= #{gId} and deleteFlag = false
+    </update>
+
+    <update id="deleteById" parameterType="int">
+        update Goods set deleteFlag = true
+        where gId= #{gId}
+    </update>
+
+    <select id="getCount" resultType="int">
+        select COUNT(*) from Goods
+    </select>
+
+    <select id="getByPage" resultMap="GMap">
+        select *
+        from Goods
+        limit #{limit} offset #{offset}
+    </select>
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wtu.parking.mapper.SystemConfigMapper">
+
+    <select id="getPricePerH" resultType="int">
+        SELECT pricePerH
+        FROM SystemConfig
+    </select>
+
+    <select id="getMaxPricePerD" resultType="int">
+        SELECT maxPricePerDay
+        FROM SystemConfig
+    </select>
+
+    <select id="getMonthlyPrice" resultType="int">
+        SELECT monthlyPrice
+        FROM SystemConfig
+    </select>
+
+    <select id="getTotalPosition" resultType="int">
+        SELECT totalPosition
+        FROM SystemConfig
+    </select>
+
+    <select id="getUsedCount" resultType="int">
+        SELECT usedCount
+        FROM SystemConfig
+    </select>
+
+    <update id="setTotalPosition" parameterType="int" >
+        update SystemConfig set totalPosition = #{value}
+    </update>
+
+    <update id="setUsedCount" parameterType="int" >
+        update SystemConfig set usedCount = #{value}
+    </update>
+</mapper>

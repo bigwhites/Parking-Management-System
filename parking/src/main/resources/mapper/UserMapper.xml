@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wtu.parking.mapper.UserMapper">
+
+    <resultMap id="uMap" type="com.wtu.parking.entity.User">
+        <id column="uId" property="uId"/>
+        <result column="nickName" property="nickName"/>
+        <result column="teleNum" property="teleNum"/>
+        <result column="uLevel" property="uLevel"/>
+        <result column="balance" property="balance"/>
+        <result column="pwd" property="pwd"/>
+        <result column="uSex" property="uSex"/>
+        <result column="startTime" property="startTime" javaType="java.util.Date"/>
+        <result column="effective" property="effective" />
+        <result column="credit" property="credit"/>
+
+        <collection property="records" ofType="com.wtu.parking.entity.Record">
+            <id column="recordId" property="recordId"/>
+            <result column="uId" property="uId"/>
+            <result column="carNum" property="carNum"/>
+            <result column="price" property="price"/>
+            <result column="enterTime" property="enterTime" javaType="java.sql.Timestamp"/>
+            <result column="leaveTime" property="leaveTime" javaType="java.sql.Timestamp"/>
+            <result column="enterGId" property="enterGId" />
+            <result column="leaveGId" property="leaveGId" />
+            <result column="carPosition" property="carPosition"/>
+        </collection>
+    </resultMap>
+
+
+    <resultMap id="uMap_simple" type="com.wtu.parking.entity.User">
+        <id column="uId" property="uId"/>
+        <result column="nickName" property="nickName"/>
+        <result column="teleNum" property="teleNum"/>
+        <result column="uLevel" property="uLevel"/>
+        <result column="balance" property="balance"/>
+        <result column="pwd" property="pwd"/>
+        <result column="uSex" property="uSex"/>
+        <result column="startTime" property="startTime" javaType="java.util.Date"/>
+        <result column="effective" property="effective" />
+        <result column="credit" property="credit"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.wtu.parking.entity.User">
+        INSERT INTO User(nickName, teleNum, uLevel, balance, pwd, uSex)
+        VALUES(#{nickName},#{teleNum},#{uLevel},#{balance},#{pwd},#{uSex})
+    </insert>
+
+    <select id="findByTeleNum" parameterType="String" resultMap="uMap">
+        select u.*,mU.*,R.*
+        from User u
+        left join monthlyUser mU on u.uId = mU.uId
+        left join Record R on u.uId = R.uId
+        where u.teleNum = #{teleNum}
+    </select>
+
+    <select id="findByUId" parameterType="int" resultMap="uMap">
+        select u.*,mU.*,R.*
+        from User u
+        left join monthlyUser mU on u.uId = mU.uId
+        left join Record R on u.uId = R.uId
+        where u.uId = #{uId}
+    </select>
+
+    <select id="selectByPage" resultMap="uMap_simple">
+        select u.*,mU.*
+        from User u
+        left join monthlyUser mU on u.uId = mU.uId
+        limit #{limit} offset #{offset}
+    </select>
+
+    <select id="getLastId" resultType="int">
+        SELECT MAX(uId)
+        FROM User
+    </select>
+
+    <select id="getUserCount" resultType="int">
+        SELECT COUNT(uId)
+        FROM User
+    </select>
+
+    <select id="userExist" parameterType="int"  resultType="int">
+        SELECT COUNT(*)
+        FROM User
+        WHERE uId = #{uId}
+    </select>
+
+    <update id="charge">
+        update User u set u.balance= u.balance + #{amount}
+        where u.uId = #{uId}
+    </update>
+
+    <insert id="insertChargeRecord" parameterType="com.wtu.parking.entity.RechargeHistory">
+        insert into  RechargeHistory(uId,amount,cDate)
+        values(#{uId},#{amount},CURRENT_DATE())
+    </insert>
+    
+  <select id="getHistoriesByUser" parameterType="int" resultType="com.wtu.parking.entity.RechargeHistory">
+      select *
+      from RechargeHistory
+      where uId = #{uId}
+  </select>
+
+    <update id="upDate" parameterType="com.wtu.parking.entity.User" >
+        update User u set
+        u.balance=#{balance} ,u.nickName = #{nickName},u.uLevel = #{uLevel},
+        u.pwd = #{pwd},u.uSex = #{uSex}, u.credit = #{credit},u.teleNum=#{teleNum}
+        where u.uId= #{uId}
+    </update>
+    
+    <insert id="insertMonthlyCard">
+        insert into monthlyUser(uId,startTime,effective)
+        values(#{uId},CURRENT_DATE(),#{effective})
+    </insert>
+
+    <update id="updateMonthlyUser" >
+        update monthlyUser set effective=#{effective},startTime=#{date}
+        where uId = #{uId}
+    </update>
+
+    <select id="sumRecharge" parameterType="int" resultType="java.lang.Integer">
+        select SUM(amount)
+        from RechargeHistory
+        where uId = #{uId}
+    </select>
+</mapper>

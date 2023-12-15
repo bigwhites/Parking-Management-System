@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wtu.parking.mapper.ManagerMapper">
+
+    <resultMap id="Mmap" type="com.wtu.parking.entity.Manager">
+        <id column="mId" property="mId"/>
+        <result column="mName" property="mName"/>
+        <result column="mSex" property="mSex"/>
+        <result column="mIdentityId" property="mIdentityId"/>
+        <result column="mSalary" property="mSalary"/>
+        <result column="mLevel" property="mLevel"/>
+    </resultMap>
+
+    <select id="findByMId" parameterType="int" resultMap="Mmap">
+        SELECT *
+        FROM Manager
+        WHERE mId = #{mId}
+    </select>
+
+    <select id="findByIdentityId" parameterType="String" resultMap="Mmap">
+        SELECT *
+        FROM Manager
+        WHERE #{identityId} = mIdentityId
+    </select>
+
+    <insert id="insert" parameterType="com.wtu.parking.entity.Manager">
+        INSERT INTO Manager( mName, mSex, mIdentityId, mSalary, mLevel, pwd)
+        VALUES (#{mName},#{mSex},#{mIdentityId},#{mSalary},#{mLevel},#{pwd})
+    </insert>
+
+    <select id="getLastId" resultType="int">
+        SELECT MAX(mId)
+        FROM Manager
+    </select>
+</mapper>

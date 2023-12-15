@@ -1,0 +1,87 @@
+
+server:
+  port: 4090
+
+spring:
+  servlet:
+    multipart: #设置上传文件大小
+      enabled: true
+      max-file-size: 900MB #设置单个文件的大小
+      max-request-size: 900MB #设置单次请求的文件的总大小
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#    110.41.13.21:3306
+    url: jdbc:mysql://110.41.13.21:3306/parking?useSSL=false
+    username: root
+    password: ~wtuWTUwtu123456789
+    druid:
+      # ########## 连接池配置-开始 ##########
+      initial-size: 8 #初始化大小
+      min-idle: 8 #最小连接数
+      max-active: 25 #最大连接数
+      max-wait: 100000 #配置获取连接等待超时的时间
+      pool-prepared-statements: true #是否缓存preparedStatement，也就是PSCache。PSCache对支持游标的数据库性能提升巨大，比如说oracle。在mysql5.5以下的版本中没有PSCache功能，建议关闭掉。5.5及以上版本有PSCache，建议开启。
+      max-pool-prepared-statement-per-connection-size: 20 #配置PSCache的大小
+      validation-query: SELECT 1 FROM DUAL #用来检测连接是否有效的sql，要求是一个查询语句，常用SELECT 1 FROM DUAL
+      validation-query-timeout: 8000 #检测连接是否有效的超时时间，单位是秒。底层调用jdbc Statement对象的void setQueryTimeout(int seconds)方法
+      test-on-borrow: false #申请连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能
+      test-on-return: false #是否在归还到池中前进行检验
+      test-while-idle: true #是否在连接池空闲一段时间后检验连接有效性
+      time-between-eviction-runs-millis: 60000 #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      min-evictable-idle-time-millis: 300000 #配置一个连接在池中最小生存的时间，单位是毫秒
+      max-evictable-idle-time-millis: 600000 #配置连接池中连接，在时间段内一直空闲，被逐出连接池的时间，单位毫秒。在minEvictableIdleTimeMillis基础上扩展，会在minEvictableIdleTimeMillis基础上判断连接是否空闲（默认逐出时间就是minEvictableIdleTimeMillis）
+      #max-open-prepared-statements: #和上面的等价
+      #   配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      #filters: stat,wall,log4j
+      use-global-data-source-stat: true #是否使用统计
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000 #合并多个DruidDataSource的监控数据
+      # ########## 连接池配置-结束 ##########:
+      # ########## 连接池监控配置-开始 ##########
+      # WebStatFilter配置，说明请参考Druid Wiki，配置_配置WebStatFilter
+      web-stat-filter:
+        enabled: true #是否启用StatFilter，默认值false
+        url-pattern: '/*' #需要拦截的url
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*' #过滤器忽略的资源
+        session-stat-enable: true #是否开启session统计功能，默认值false
+        session-stat-max-count: 1000 #session统计最大值
+        principal-session-name: #session用户信息
+        principal-cookie-name: #session用户cookie名称
+        profile-enable: true #监控单个url调用的sql列表
+      # StatViewServlet配置，说明请参考Druid Wiki，配置_StatViewServlet配置
+      stat-view-servlet:
+        enabled: true #是否启用StatViewServlet（监控页面）默认值为false（考虑到安全问题默认并未启动，如需启用建议设置密码或白名单以保障安全）
+        url-pattern: /druid/* #监控页面拦截url
+        reset-enable: false #是否启用重置功能
+        login-username: admin #监控页面登录用户名
+        login-password: admin #监控页面登录用户密码
+        #StatViewSerlvet展示出来的监控信息比较敏感，是系统运行的内部情况，如果你需要做访问控制，可以配置allow和deny这两个参数
+        #deny优先于allow，如果在deny列表中，就算在allow列表中，也会被拒绝。如果allow没有配置或者为空，则允许所有访问
+        #配置的格式
+        #<IP>或者<IP>/<SUB_NET_MASK_size>其中128.242.127.1/24，配置多个英文逗号分隔
+        #24表示，前面24位是子网掩码，比对的时候，前面24位相同就匹配,不支持IPV6。
+        allow: 127.0.0.1
+        deny: #黑名单
+      # Spring监控配置，说明请参考Druid Github Wiki，配置_Druid和Spring关联监控配置
+      #aop-patterns: com.demo.*.service.* #Spring监控AOP切入点，如x.y.z.service.*,配置多个英文逗号分隔
+      # ########## 连接池监控配置-结束 ##########  http://localhost:8080/druid/index.html
+  banner:
+    charset: UTF-8
+    location: classpath:banner.txt
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+mybatis:
+  type-aliases-package: com.wtu.parking.entity
+  mapper-locations: classpath:/mapper/*.xml
+
+
+logging:
+  level:
+    root: info
+
+
+token:
+  header: token # header类型
+  secret: 789 #token的秘钥
+  expireTime: 1 #token的有效时间，以天为单位，默认为1天

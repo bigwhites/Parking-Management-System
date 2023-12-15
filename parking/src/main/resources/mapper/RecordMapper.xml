@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wtu.parking.mapper.RecordMapper">
+
+    <resultMap id="uMap" type="com.wtu.parking.entity.Record">
+        <id column="recordId" property="recordId"/>
+        <result column="uId" property="uId"/>
+        <result column="carNum" property="carNum"/>
+        <result column="price" property="price"/>
+        <result column="enterTime" property="enterTime" javaType="java.sql.Timestamp"/>
+        <result column="leaveTime" property="leaveTime" javaType="java.sql.Timestamp"/>
+        <result column="enterGId" property="enterGId" />
+        <result column="leaveGId" property="leaveGId" />
+        <result column="carPosition" property="carPosition"/>
+
+        <association property="user" javaType="com.wtu.parking.entity.User">
+            <id column="uId" property="uId"/>
+            <result column="nickName" property="nickName"/>
+            <result column="teleNum" property="teleNum"/>
+            <result column="uLevel" property="uLevel"/>
+            <result column="balance" property="balance"/>
+            <result column="pwd" property="pwd"/>
+            <result column="uSex" property="uSex"/>
+            <result column="startTime" property="startTime" javaType="java.util.Date"/>
+            <result column="effective" property="effective" />
+        </association>
+
+        <association property="enterGate" javaType="com.wtu.parking.entity.Gate">
+            <id column="inGateId" property="gateId"/>
+            <result column="inGPosition" property="gPosition"/>
+            <result column="inOnRun" property="onRun"/>
+        </association>
+
+        <association property="leaveGate" javaType="com.wtu.parking.entity.Gate">
+            <id column="outGateId" property="gateId"/>
+            <result column="outGPosition" property="gPosition"/>
+            <result column="outOnRun" property="onRun"/>
+        </association>
+    </resultMap>
+
+
+    <select id="getByUId" parameterType="int" resultMap="uMap">
+        select R.*, nickName, teleNum, uLevel, balance, pwd, uSex,
+        Gin.gateId as inGateId,Gin.gPosition as inGposition,
+        GOut.gateId as outGateId,GOut.gPosition as outGPosition,
+        Gin.onRun as inOnRun , GOut.onRun as outOnRun
+        from Record R
+        left join User U on R.uId = U.uId
+        left join Gate Gin on Gin.gateId=R.enterGId
+        left join Gate GOut on GOut.gateId=R.leaveGId
+        where R.uId=#{uId}
+        order by enterTime desc
+    </select>
+
+    <select id="getUsrLastRecord" parameterType="int" resultMap="uMap">
+        select R.*, nickName, teleNum, uLevel, balance, pwd, uSex,
+        Gin.gateId as inGateId,Gin.gPosition as inGposition,
+        GOut.gateId as outGateId,GOut.gPosition as outGPosition,
+        Gin.onRun as inOnRun , GOut.onRun as outOnRun
+        from Record R
+        left join User U on R.uId = U.uId
+        left join Gate Gin on Gin.gateId=R.enterGId
+        left join Gate GOut on GOut.gateId=R.leaveGId
+        where R.uId = #{uId}
+        order by  enterTime desc limit 1
+    </select>
+
+    <update id="upDateLastRec" parameterType="com.wtu.parking.entity.Record">
+        update Record
+        set price = #{price},leaveTime=#{leaveTime},leaveGId=#{leaveGId}
+        where recordId = #{recordId}
+    </update>
+
+    <insert id="insertNewRec" parameterType="com.wtu.parking.entity.Record">
+        INSERT INTO Record(uId, carNum, enterGId, carPosition)
+        VALUES(#{uId},#{carNum},#{enterGId},#{carPosition})
+    </insert>
+
+    <select id="carNumCntInParking" parameterType="String" resultType="int">
+        select COUNT(carNum)
+        from Record
+        where leaveTime IS NULL
+        AND carNum = #{carNum}
+    </select>
+
+</mapper>
